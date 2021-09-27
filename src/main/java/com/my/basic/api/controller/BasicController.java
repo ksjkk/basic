@@ -11,15 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
 @RequestMapping("api")
-@CrossOrigin(originPatterns = "*")
+@CrossOrigin(originPatterns = "*", allowCredentials = "true")
 public class BasicController {
 
     private long Sequence = 1L;
@@ -57,5 +54,21 @@ public class BasicController {
         }
 
         return uuid;
+    }
+
+    @GetMapping("/auth/response")
+    public void flushResponse(HttpServletRequest request, HttpServletResponse response){
+        try {
+            Cookie[] cookies = request.getCookies();
+            for (Cookie cookie : cookies) {
+                logger.debug("cookie (name, value) is ({},{})", cookie.getName(), cookie.getValue());
+            }
+        }
+        catch (Exception e){
+
+        }
+        Cookie cookie = new Cookie("auth", UUID.randomUUID().toString());
+        response.addCookie(cookie);
+
     }
 }
