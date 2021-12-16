@@ -7,13 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,8 +24,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BasicController {
 
-    private long Sequence = 1L;
     private final CustomValidate customValidate;
+
+    private long Sequence = 1L;
 
     Logger logger = LoggerFactory.getLogger(BasicController.class);
 
@@ -77,25 +78,23 @@ public class BasicController {
         response.addCookie(cookie);
     }
 
-    @PostMapping("/validate-collection")
-    public void validateCollection(@RequestBody @Valid List<BasicDto> list, BindingResult result){
+    @PostMapping("/validate-custom-collection")
+    public void validateCustomCollection(@RequestBody List<BasicDto> list, BindingResult result){
         logger.debug("================================= validate collection start =================================");
-        customValidate(list, result);
+        customValidate.validate(list, result);
+    }
+
+    @PostMapping("/validate-collection")
+    public void validateCollection(@RequestBody List<BasicDto> list, BindingResult result){
+        logger.debug("================================= validate collection start =================================");
+        if(list.size() == 0) {
+            throw new IllegalArgumentException("list size must be positive");
+        }
     }
 
     @PostMapping("/validate-dto")
     public void validateDto(@RequestBody @Valid BasicDto dto){
         logger.debug("================================= validate dto start =================================");
         System.out.println(dto.toString());
-    }
-
-    private void customValidate(Object object, BindingResult result){
-        customValidate.validate(object, result);
-        if(result.hasErrors()){
-            for (ObjectError allError : result.getAllErrors()) {
-                logger.error("allError.getDefaultMessage() = {}", allError.getDefaultMessage());
-                throw new IllegalArgumentException(allError.getDefaultMessage());
-            }
-        }
     }
 }

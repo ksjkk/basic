@@ -2,6 +2,7 @@ package com.my.basic.config.validate;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 
@@ -35,6 +36,11 @@ public class CustomValidate implements Validator {
 
         } else {
             adapter.validate(target, errors);
+        }
+        if(errors.hasErrors()){
+            for (ObjectError allError : errors.getAllErrors()) {
+                throw new IllegalArgumentException(allError.getDefaultMessage());
+            }
         }
     }
 }
