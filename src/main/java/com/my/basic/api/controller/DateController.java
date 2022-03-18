@@ -14,6 +14,8 @@ public class DateController {
 
     @PostMapping("/log-date-type")
     public void logDate(@RequestBody DateDto dto){
+        System.out.println("==================================");
         System.out.println("dto = " + dto);
+        System.out.println("==================================");
     }
 }
